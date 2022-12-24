@@ -2,6 +2,7 @@
 from decimal import Decimal
 import logging
 import pandas as pd
+import numpy as np
 
 from hummingbot.core.event.events import OrderType
 from hummingbot.strategy.market_trading_pair_tuple import MarketTradingPairTuple
@@ -54,16 +55,16 @@ class CournotCompetitionStrategy(StrategyPyBase):
             price_ask_1, quantity_ask_1, _ = list(next(self._market_info.order_book_ask_entries()))
             price_ask_2, quantity_ask_2, _ = list(next(self._market_info.order_book_ask_entries()))
             
-            spread = max(float(price_ask_1) - float(price_bid_1),0)
-            price = float(self._market_info.get_mid_price())
+            spread = np.log(float(price_ask_1)) - np.log(float(price_bid_1))
+            price = np.log(float(self._market_info.get_mid_price()))
             quantity = float(quantity_bid_1) * 1000.
                         
             #self.logger().info((spread, price, quantity))
             
             quantity_first_seller = float(quantity_bid_1)
             quantity_second_seller = float(quantity_bid_2)
-            cost_first_seller = float(price) - float(price_bid_1)
-            cost_second_seller = float(price) - float(price_bid_2)
+            cost_first_seller = float(price) - np.log(float(price_bid_1))
+            cost_second_seller = float(price) -np.log(float(price_bid_2))
             
             params = {'price':float(price), 
                       'quantity':float(quantity), 
